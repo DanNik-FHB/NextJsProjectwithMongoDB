@@ -1,41 +1,46 @@
-import React, { useState, useEffect } from 'react';
-const words = [
-  'apfel', 'banane', 'kirsche', 'orange', 'birne', 'aprikose', 'schokolade', 'krokodil', 'elefant', 'gitarre',  'sonnenblume', 'regenbogen', 'bibliothek', 'flamingo', 'wassermelone', 'zebra', 'kaktus', 'papagei', 'diamant',  'erdbeere', 'kaffeetasse', 'tannenzapfen', 'schneeflocke', 'hubschrauber', 'astronaut', 'bananenbrot', 'pinguin',  'lavendel', 'orangensaft', 'regenschirm', 'karamell', 'krokus', 'wasserski', 'flamingofeder', 'zitronensorbet',  'schmetterling', 'kiefernzapfen', 'sonnenuntergang', 'tannenbaum', 'erdnussbutter', 'papierflieger', 'diamantring',  'zitronenlimonade', 'schneemann', 'hubschrauberlandeplatz', 'astronomie', 'bananensplit', 'pinguinbaby',];
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+
+const words = ['apfel', 'banane', 'kirsche', 'orange', 'birne', 'aprikose', 'schokolade', 'krokodil',
+  'elefant', 'gitarre', 'sonnenblume', 'regenbogen', 'bibliothek', 'flamingo', 'wassermelone', 'zebra',
+  'kaktus', 'papagei', 'diamant', 'erdbeere', 'kaffeetasse', 'tannenzapfen', 'schneeflocke', 'kürbis',
+  'hubschrauber', 'astronaut', 'bananenbrot', 'pinguin', 'lavendel', 'orangensaft', 'schildkröte',
+  'regenschirm', 'karamell', 'krokus', 'kirschblüte', 'wasserski', 'kaktusblüte', 'flamingofeder',
+  'zitronensorbet', 'schmetterling', 'kiefernzapfen', 'sonnenuntergang', 'kaffeemühle', 'tannenbaum',
+  'erdnussbutter', 'papierflieger', 'diamantring', 'wassermelonenstück', 'zitronenlimonade', 'schneemann',
+  'kürbissuppe', 'hubschrauberlandeplatz', 'astronomie', 'bananensplit', 'pinguinbaby'];
+
 const maxLives = 5;
+
 function getRandomWord() {
   return words[Math.floor(Math.random() * words.length)];
 }
+
 export default function HangmanGame() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  const [currentWord, setCurrentWord] = useState<string | null>(null);
-  const [guessedLetters, setGuessedLetters] = useState<string[]>([]);
+  const [currentWord, setCurrentWord] = useState(getRandomWord());
+  const [guessedLetters, setGuessedLetters] = useState([]);
   const [lives, setLives] = useState(maxLives);
   const [guessedCorrectLetters, setGuessedCorrectLetters] = useState(0);
   const [guessedLetter, setGuessedLetter] = useState('');
   const [infoBox, setInfoBox] = useState(false);
-  useEffect(() => {
-    if (mounted) {
-      setCurrentWord(getRandomWord());
-    }
-  }, [mounted]);
-  function countLetterFrequency(currentWord: string, letter: string) {
+
+  function countLetterFrequency(currentWord, letter) {
     let frequency = 0;
     for (let i = 0; i < currentWord.length; i++) {
       if (currentWord[i] === letter) {
         frequency++;
-      }    }
+      }
+    }
     return frequency;
   }
-  function checkLetter(letter: string) {
-    setInfoBox(false);
+
+  function checkLetter(letter) {
     if (guessedLetters.includes(letter)) {
       setInfoBox(true);
       return;
     }
-    if (currentWord && currentWord.includes(letter)) {
+
+    if (currentWord.includes(letter)) {
       setGuessedLetters([...guessedLetters, letter]);
       const frequency = countLetterFrequency(currentWord, letter);
       setGuessedCorrectLetters(guessedCorrectLetters + frequency);
@@ -45,75 +50,83 @@ export default function HangmanGame() {
     }
     setGuessedLetter('');
   }
+
   const maskedWord = currentWord
-    ? currentWord
-        .split('')
-        .map((letter) => (guessedLetters.includes(letter) ? letter : '_'))
-        .join(' ')    : '';
+    .split('')
+    .map((letter) => (guessedLetters.includes(letter) ? letter : '_'))
+    .join(' ');
+
   function handleGuess() {
     if (guessedLetter.length === 1) {
+      setInfoBox(false); // Reset infoBox state when making a new guess
       checkLetter(guessedLetter);
-    }  }
+    }
+  }
+
   function initializeGame() {
     setCurrentWord(getRandomWord());
     setGuessedLetters([]);
     setGuessedCorrectLetters(0);
     setLives(maxLives);
+    setInfoBox(false); // Reset infoBox state when initializing a new game
   }
-  if (!mounted) {
-    return null; 
-  }
+
   return (
-    <div style={styles.container}>
-      <p style={styles.paragraph}>Hangman-Spiel</p>
-      <p style={styles.paragraph}>Aktuelles Wort: {maskedWord}</p>
-      <input
+    <View style={styles.container}>
+      <Text style={styles.paragraph}>Hangman-Spiel</Text>
+      <Text style={styles.paragraph}>Aktuelles Wort: {maskedWord}</Text>
+      <TextInput
         style={styles.input}
-        onChange={(e) => setGuessedLetter(e.target.value)}
+        onChangeText={setGuessedLetter}
         value={guessedLetter}
         maxLength={1}
         autoCapitalize="none"
       />
-      <button onClick={handleGuess}>Buchstabe raten</button>
-      <p style={styles.paragraph}>
+      <Button onPress={handleGuess} title="Buchstabe raten" />
+      <Text style={styles.paragraph}>
         Bereits geratene Buchstaben: {guessedLetters.join(', ')}
-      </p>
-      <p style={styles.paragraph}>Verbleibende Leben: {lives}</p>
+      </Text>
+      <Text style={styles.paragraph}>Verbleibende Leben: {lives}</Text>
 
       {lives === 0 && (
-        <p style={styles.paragraph}>
+        <Text style={styles.paragraph}>
           Game Over! Das Wort war "{currentWord}"
-        </p>
+        </Text>
       )}
-      {lives > 0 && currentWord && guessedCorrectLetters === currentWord.length && (
-        <p style={styles.paragraph}>
+      {lives > 0 && guessedCorrectLetters === new Set(currentWord).size && (
+        <Text style={styles.paragraph}>
           Gratulation! Du hast das Wort "{currentWord}" erraten!
-        </p>
+        </Text>
       )}
-      <button onClick={initializeGame}>Neues Spiel</button>
+      {<Button onPress={initializeGame} title="Neues Spiel" />}
       {infoBox && (
-        <p style={styles.paragraph}>
+        <Text style={styles.paragraph}>
           Dieser Buchstabe wurde bereits geraten.
-        </p>      )}
-    </div>  );}
-const styles = {
+        </Text>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
   container: {
+    flex: 1,
     display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-evenly',
-    backgroundColor: 'lavender',
+    flexDirection: 'column' as 'column',
+    justifyContent: 'center',
     alignItems: 'center',
-    padding: '16px',
+    padding: 16,
   },
   paragraph: {
-    fontSize: '18px',
-    marginBottom: '10px',
+    fontSize: 18,
+    marginBottom: 10,
   },
   input: {
-    width: '40px',
-    height: '40px',
-    borderColor: 'black',
-    borderWidth: '1px',
+    width: 40,
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
     textAlign: 'center',
-    fontSize: '18px',
-  },};
+    fontSize: 18,
+  },
+});
