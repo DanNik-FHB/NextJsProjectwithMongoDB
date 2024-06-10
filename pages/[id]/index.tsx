@@ -32,7 +32,7 @@ const PetPage = ({ pet }: Props) => {
   };
 
   return (
-    <div key={pet._id}>
+    <div key={pet._id.toString}>
       <div className="card">
         <img src={pet.image_url} />
         <h5 className="pet-name">{pet.name}</h5>
