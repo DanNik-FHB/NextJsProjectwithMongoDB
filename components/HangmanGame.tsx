@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { StyleSheet, TextInput, View, Text, Button } from 'react-native';
+import { CSSProperties } from 'react';
 
 const words = ['apfel', 'banane', 'kirsche', 'orange', 'birne', 'aprikose', 'schokolade', 'krokodil',
   'elefant', 'gitarre', 'sonnenblume', 'regenbogen', 'bibliothek', 'flamingo', 'wassermelone', 'zebra',
@@ -18,13 +19,13 @@ function getRandomWord() {
 
 export default function HangmanGame() {
   const [currentWord, setCurrentWord] = useState(getRandomWord());
-  const [guessedLetters, setGuessedLetters] = useState([]);
+  const [guessedLetters, setGuessedLetters] = useState<string[]>([]);
   const [lives, setLives] = useState(maxLives);
   const [guessedCorrectLetters, setGuessedCorrectLetters] = useState(0);
   const [guessedLetter, setGuessedLetter] = useState('');
   const [infoBox, setInfoBox] = useState(false);
 
-  function countLetterFrequency(currentWord, letter) {
+  function countLetterFrequency(currentWord: string, letter: string) {
     let frequency = 0;
     for (let i = 0; i < currentWord.length; i++) {
       if (currentWord[i] === letter) {
@@ -34,7 +35,7 @@ export default function HangmanGame() {
     return frequency;
   }
 
-  function checkLetter(letter) {
+  function checkLetter(letter: string) {
     if (guessedLetters.includes(letter)) {
       setInfoBox(true);
       return;
@@ -72,61 +73,60 @@ export default function HangmanGame() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.paragraph}>Hangman-Spiel</Text>
-      <Text style={styles.paragraph}>Aktuelles Wort: {maskedWord}</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={setGuessedLetter}
+    <div style={styles.container}>
+      <p style={styles.paragraph}>Hangman-Spiel</p>
+      <p style={styles.paragraph}>Aktuelles Wort: {maskedWord}</p>
+      <input
+        style={styles.input as CSSProperties}
+        onChange={(e) => setGuessedLetter(e.target.value)}
         value={guessedLetter}
         maxLength={1}
         autoCapitalize="none"
       />
-      <Button onPress={handleGuess} title="Buchstabe raten" />
-      <Text style={styles.paragraph}>
+      <button onClick={handleGuess}>Buchstabe raten</button>
+      <p style={styles.paragraph}>
         Bereits geratene Buchstaben: {guessedLetters.join(', ')}
-      </Text>
-      <Text style={styles.paragraph}>Verbleibende Leben: {lives}</Text>
+      </p>
+      <p style={styles.paragraph}>Verbleibende Leben: {lives}</p>
 
       {lives === 0 && (
-        <Text style={styles.paragraph}>
+        <p style={styles.paragraph}>
           Game Over! Das Wort war "{currentWord}"
-        </Text>
+        </p>
       )}
       {lives > 0 && guessedCorrectLetters === new Set(currentWord).size && (
-        <Text style={styles.paragraph}>
+        <p style={styles.paragraph}>
           Gratulation! Du hast das Wort "{currentWord}" erraten!
-        </Text>
+        </p>
       )}
-      {<Button onPress={initializeGame} title="Neues Spiel" />}
+      {<button onClick={initializeGame}>Neues Spiel</button>}
       {infoBox && (
-        <Text style={styles.paragraph}>
+        <p style={styles.paragraph}>
           Dieser Buchstabe wurde bereits geraten.
-        </Text>
+        </p>
       )}
-    </View>
+    </div>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = {
   container: {
-    flex: 1,
     display: 'flex',
-    flexDirection: 'column' as 'column',
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    padding: '16px',
   },
   paragraph: {
-    fontSize: 18,
-    marginBottom: 10,
+    fontSize: '18px',
+    marginBottom: '10px',
   },
   input: {
-    width: 40,
-    height: 40,
+    width: '40px',
+    height: '40px',
     borderColor: 'gray',
-    borderWidth: 1,
+    borderWidth: '1px',
     textAlign: 'center',
-    fontSize: 18,
-  },
-});
+    fontSize: '18px',
+  } as CSSProperties,
+};
