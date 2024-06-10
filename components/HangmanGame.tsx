@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, View, Text, Button } from 'react-native';
 import { CSSProperties } from 'react';
 
 const words = ['apfel', 'banane', 'kirsche', 'orange', 'birne', 'aprikose', 'schokolade', 'krokodil',
@@ -73,7 +72,7 @@ export default function HangmanGame() {
   }
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container as CSSProperties}>
       <p style={styles.paragraph}>Hangman-Spiel</p>
       <p style={styles.paragraph}>Aktuelles Wort: {maskedWord}</p>
       <input
@@ -109,7 +108,7 @@ export default function HangmanGame() {
   );
 }
 
-const styles = {
+const styles: { [key: string]: CSSProperties } = {
   container: {
     display: 'flex',
     flexDirection: 'column',
@@ -128,5 +127,5 @@ const styles = {
     borderWidth: '1px',
     textAlign: 'center',
     fontSize: '18px',
-  } as CSSProperties,
+  },
 };
