@@ -111,7 +111,6 @@ export default function HangmanGame() {
 const styles: { [key: string]: CSSProperties } = {
   container: {
     display: 'flex',
-    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     padding: '16px',
